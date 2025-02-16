@@ -21,6 +21,29 @@ class Friends(models.Model):
 
 class Friends_Manager:
 	@staticmethod
+	def status(request_user, target_user):
+		"""User instance, target instance: returns a tuple of (friendship: yes/no, None/pending request(from/to))"""
+		if request_user == target_user:
+			return (False, None)
+		from_user = Friends.objects.filter(origin=request_user, target=target_user)
+		to_user = Friends.objects.filter(origin=target_user, target=request_user)
+		if from_user.filter(accepted=True).exists() or to_user.filter(accepted=True).exists():
+			return (True, None)
+		elif from_user.filter(accepted=False).exists():
+			return (False, True)
+		elif to_user.filter(accepted=False).exists():
+			return (False, False)
+		return (False, None)
+
+	@staticmethod
+	def count_friends(user):
+		"""User instance: returns the number of friends the user has"""
+		return Friends.objects.filter(
+			models.Q(origin=user) | models.Q(target=user),
+			accepted=True
+		).count()
+
+	@staticmethod
 	# send a friend request
 	def request(origin, target_username):
 		"""User instance, target username"""

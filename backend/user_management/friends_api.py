@@ -24,10 +24,15 @@ def friendships(request, username=None):
 	return JsonResponse(
 		{
 			'success': True,
-			'friends_users': [friend.username for friend in friends_of],
+			'friends_users': [
+				{
+					'username': friend.username,
+					# 'profile_picture': friend.image.url if friend.image else None,
+				}
+				for friend in friends_of
+			],
 		}
 	)
-
 
 @login_required_redirect
 def requests(request):

@@ -71,10 +71,16 @@ export function update_navbar() {
 	.then(data => {
 		const navbars = document.getElementById('navbar-right');
 		if (data.is_authenticated) {
+			const username = document.querySelector('meta[name="username-token"]').content;
 			navbars.innerHTML = `
+			<a class="nav-item nav-link" href="/dashboard/${username}" id="personal-profile-link">${username}</a>
 			<a class="nav-item nav-link" href="/account/" id="account-link">${gettext("Account")}</a>
 			<a class="nav-item nav-link" href="/logout/" id="logout-link">${gettext("Logout")}</a>
 			`;
+			document.getElementById('personal-profile-link').addEventListener('click', function(event) {
+				event.preventDefault();
+				router.navigateTo(`/dashboard/${username}`);
+			});
 			document.getElementById('account-link').addEventListener('click', function(event) {
 				event.preventDefault();
 				router.navigateTo('/account/');

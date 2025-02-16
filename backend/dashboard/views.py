@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from user_management.models import CustomUser
 from user_management.blocked_users import Block_Manager
 from transcendence.decorators import login_required_redirect
+from user_management.friends import Friends_Manager
 
 def profile_list(request):
 	"""
@@ -49,6 +50,20 @@ def get_profile(request, username):
 			'is_user_blocked_by_requester': is_user_blocked_by_requester,
 		})
 
+	friend_count = Friends_Manager.count_friends(user)
+
+	friend_status = 'not_friends'
+	if request.user != user:
+		status, pending = Friends_Manager.status(request.user, user)
+		if status:
+			friend_status = 'friends'
+		elif pending is None:
+			friend_status = 'not_friends'
+		elif pending:
+			friend_status = 'friend_request_sent'
+		else:
+			friend_status = 'friend_request_received'
+
 	profile_data = {
 		'username': user.username,
 		'image_url': user.image.url,
@@ -60,6 +75,8 @@ def get_profile(request, username):
 		'quiz_correct_answers': user.quiz_correct_answers,
 		'is_requests_profile': is_requests_profile,
 		'is_user_blocked_by_requester': is_user_blocked_by_requester,
+		'friend_count': friend_count,
+		'friend_status': friend_status,
 	}
 	return JsonResponse({
 		'success': True,

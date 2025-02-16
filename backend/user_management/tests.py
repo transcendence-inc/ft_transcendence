@@ -246,3 +246,26 @@ class FriendsManagerTest(TestCase):
 		self.assertTrue(
 			Friends.objects.filter(origin=self.user1, target=self.user3, accepted=False).exists()
 		)
+
+	def test_status(self):
+		# Test friendship status function
+		# No friendship
+		self.assertEqual(Friends_Manager.status(self.user1, self.user2), (False, None))
+
+		# Request sent from user1 to user2
+		Friends_Manager.request(self.user1, 'user2')
+		self.assertEqual(Friends_Manager.status(self.user1, self.user2), (False, True))
+		self.assertEqual(Friends_Manager.status(self.user2, self.user1), (False, False))
+
+		# Request accepted
+		Friends_Manager.accept_request(self.user2, 'user1')
+		self.assertEqual(Friends_Manager.status(self.user1, self.user2), (True, None))
+		self.assertEqual(Friends_Manager.status(self.user2, self.user1), (True, None))
+
+		# Remove friendship
+		Friends_Manager.remove_friend(self.user1, 'user2')
+		self.assertEqual(Friends_Manager.status(self.user1, self.user2), (False, None))
+		self.assertEqual(Friends_Manager.status(self.user2, self.user1), (False, None))
+
+		# Test same user
+		self.assertEqual(Friends_Manager.status(self.user1, self.user1), (False, None))

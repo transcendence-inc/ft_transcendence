@@ -49,6 +49,7 @@ async function logout_at_server() {
 		messageContainer.innerHTML = '<p>' + data.message + '</p>';
 		if (data.csrf_token) {
 			document.querySelector('meta[name="csrf-token"]').content = data.csrf_token;
+			document.querySelector('meta[name="username-token"').content = undefined;
 		}
 		update_navbar();
 	} else {

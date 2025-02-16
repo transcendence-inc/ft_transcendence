@@ -90,21 +90,16 @@ function add_login_form_listener() {
 			if (data.csrf_token) {
 				document.querySelector('meta[name="csrf-token"]').content = data.csrf_token;
 			}
+			if (data.username) {
+				document.querySelector('meta[name="username-token"]').content = data.username;
+			}
 			update_navbar();
 			router.navigateTo('/dashboard/');
 		} else {
-			for (const [field, errors] of Object.entries(data.errors)) {
-				const errorList = document.createElement('ul');
-				errors.forEach(error => {
-					const errorItem = document.createElement('li');
-					errorItem.textContent = error.message;
-					errorList.appendChild(errorItem);
-				});
-				const fieldContainer = document.getElementById(field + '-errors');
-				fieldContainer.innerHTML = '';
-				fieldContainer.appendChild(errorList);
-				document.getElementById('id_' + field).classList.add('is-invalid');
-			}
+			document.getElementById('id_username').classList.add('is-invalid');
+			document.getElementById('username-errors').innerHTML = data.message;
+			document.getElementById('id_password').classList.add('is-invalid');
+			document.getElementById('password-errors').innerHTML = data.message;
 		}
 	});
 }
